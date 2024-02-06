@@ -32,4 +32,4 @@ jobs:
           push: true
           platforms: linux/arm64/v8,linux/amd64
           file: Dockerfile
-          tags: ghcr.io/port-labs/port-aws-cost-exporter:${{ inputs.VERSION }},ghcr.io/port-labs/port-aws-cost-exporter:latest
+          tags: ghcr.io/aidan-port/port-aws-cost-exporter:${{ inputs.VERSION }},ghcr.io/aidan-port/port-aws-cost-exporter:latest
