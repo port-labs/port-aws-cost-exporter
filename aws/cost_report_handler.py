@@ -69,6 +69,7 @@ class AWSCostReportHandler:
 
         return report_data
 
+
     @staticmethod
     def _build_aggregated_key(obj):
         key_parts = []

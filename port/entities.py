@@ -5,11 +5,21 @@ def build_cost_entity(report_data, blueprint):
     for identifier, lines in report_data.items():
         entity = {"identifier": re.compile('[^A-Za-z0-9@_.:/=-]*').sub('', identifier),
                   "blueprint": blueprint,
-                  "properties": {"unblendedCost": 0, "blendedCost": 0, "amortizedCost": 0, "ondemandCost": 0,
-                                 "payingAccount": lines[0]["bill/PayerAccountId"],
-                                 "usageAccount": lines[0]["lineItem/UsageAccountId"],
-                                 "billStartDate": lines[0]["bill/BillingPeriodStartDate"],
-                                 "product": lines[0]["product/ProductName"]}}
+                  "properties": {
+                      "unblendedCost": 0,
+                      "blendedCost": 0,
+                      "amortizedCost": 0,
+                      "ondemandCost": 0,
+                      "payingAccount": lines[0]["bill/PayerAccountId"],
+                      "usageAccount": lines[0]["lineItem/UsageAccountId"],
+                      "billStartDate": lines[0]["bill/BillingPeriodStartDate"],
+                      "product": lines[0]["product/ProductName"],
+                      "resourceId": lines[0]["lineItem/ResourceId"],
+                      "operation":lines[0]["lineItem/Operation"],
+                      "kubernetesServiceName":lines[0]["resourceTags/user:kubernetes.io/service-name"],
+                      "environment":lines[0]["resourceTags/user:environment"]
+                      }
+                  }
         for line in lines:
             entity["properties"]["unblendedCost"] += float(line.get("lineItem/NetUnblendedCost")
                                                             or line.get("lineItem/UnblendedCost") or 0)
