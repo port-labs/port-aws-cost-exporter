@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 from aws.s3_client import S3Client
 from port.client import PortClient
-from port.entities import build_cost_entity
+from port.entities import build_cloud_resource_entity, build_cost_entity
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,6 +34,15 @@ class AWSCostReportHandler:
             logger.info(f'Start aggregating file by resource id and bill start date')
             aggregated_report = AWSCostReportHandler._aggregate_cost_report(cost_report_records)
             logger.info(f'Done aggregating file, start constructing entities to upsert')
+            logger.info("Create the cloud resources")
+            cloud_resources = build_cloud_resource_entity(
+                aggregated_report, self.config["port_cloud_resource_blueprint"]
+            )
+            with ThreadPoolExecutor(
+                max_workers=self.config["port_max_workers"]
+            ) as executor:
+                executor.map(self.port_client.upsert_entity, cloud_resources)
+
             port_entities = build_cost_entity(report_data=aggregated_report, blueprint=self.config['port_blueprint'])
             with ThreadPoolExecutor(max_workers=self.config['port_max_workers']) as executor:
                 executor.map(self.port_client.upsert_entity, port_entities)

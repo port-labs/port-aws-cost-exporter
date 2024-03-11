@@ -18,6 +18,38 @@ def build_cost_entity(report_data, blueprint):
             entity["properties"]["ondemandCost"] += float(line.get("pricing/publicOnDemandCost", 0))
         yield entity
 
+def build_cloud_resource_entity(data, blueprint):
+    for identifier, lines in data.items():
+        arn = (
+            identifier.split("@")[0][len("arn:") :]
+            if identifier.startswith("arn:")
+            else None
+        )
+
+        if not arn:
+            continue
+
+        title = extract_and_capitalize_resource_name(arn)
+        # build cloud resource entity
+        cloud_resource = {
+            "identifier": lines[0]["lineItem/ResourceId"],
+            "title": title,
+            "blueprint": blueprint,
+            "properties": {"service": lines[0]["lineItem/ProductCode"], "region": lines[0]["product/region"] },
+            "relations": {"cloud-account": lines[0]["lineItem/UsageAccountId"]},
+        }
+        yield cloud_resource
+
+
+def extract_and_capitalize_resource_name(arn):
+    """Extracts the resource name from an ARN and capitalizes it."""
+    parts = arn.split(":")
+
+    if parts:  # Basic check for ARN structure
+        resource_name = parts[-1]
+        return resource_name
+    else:
+        return None  # Handle invalid ARN
 
 def _calc_amortized_cost(line):
     # Based on: https://wellarchitectedlabs.com/cost-optimization/cur_queries/queries/global/

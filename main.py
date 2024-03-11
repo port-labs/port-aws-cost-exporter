@@ -14,6 +14,7 @@ def main():
             'port_client_secret': os.environ["PORT_CLIENT_SECRET"],
             'port_base_url': os.getenv("PORT_BASE_URL", "https://api.getport.io/v1"),
             'port_blueprint': os.getenv("PORT_BLUEPRINT", "awsCost"),
+            'port_cloud_resource_blueprint': os.getenv("PORT_CLOUD_RESOURCE_BLUEPRINT", "cloudResource"),
             'port_max_workers': int(os.getenv("PORT_MAX_WORKERS", "5")),
             'port_months_to_keep': int(os.getenv("PORT_MONTHS_TO_KEEP", "3")),
             'aws_bucket_name': os.environ["AWS_BUCKET_NAME"],
