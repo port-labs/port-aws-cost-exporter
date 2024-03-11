@@ -16,6 +16,18 @@ def build_cost_entity(report_data, blueprint):
             entity["properties"]["blendedCost"] += float(line.get("lineItem/BlendedCost", 0))
             entity["properties"]["amortizedCost"] += _calc_amortized_cost(line)
             entity["properties"]["ondemandCost"] += float(line.get("pricing/publicOnDemandCost", 0))
+
+        arn = (
+            identifier.split("@")[0][len("arn:") :]
+            if identifier.startswith("arn:")
+            else None
+        )
+
+        if arn:
+            # add relation
+            entity["relations"] = {
+                "cloud-resource": lines[0]["lineItem/ResourceId"]
+            }
         yield entity
 
 def build_cloud_resource_entity(data, blueprint):
